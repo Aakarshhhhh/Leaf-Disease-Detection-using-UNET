@@ -1,0 +1,30 @@
+# LeafGuard AI - Modern SaaS Dashboard Requirements
+# Install with: pip install -r requirements_app.txt
+
+# Core web framework
+streamlit>=1.28.0
+
+# Image processing
+Pillow>=9.5.0
+opencv-python>=4.8.0
+
+# Deep learning
+torch>=2.0.0
+torchvision>=0.15.0
+
+# Data processing and visualization
+numpy>=1.24.0
+matplotlib>=3.7.0
+scikit-learn>=1.3.0
+plotly>=5.15.0
+
+# Interactive components
+streamlit-image-comparison>=0.0.4
+streamlit-lottie>=0.0.5
+streamlit-option-menu>=0.3.6
+
+# HTTP requests for Lottie animations
+requests>=2.31.0
+
+# Additional utilities
+tqdm>=4.65.0

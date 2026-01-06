@@ -44,8 +44,8 @@ def load_lottie_url(url: str):
 
 # Set page config
 st.set_page_config(
-    page_title="🌱 LeafGuard AI",
-    page_icon="🍃",
+    page_title="LeafGuard AI",
+    page_icon="L",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -654,7 +654,7 @@ def render_navigation():
         
         selected = option_menu(
             menu_title=None,
-            options=["🏠 Home", "🔍 Leaf Analysis", "📊 Model Metrics", "⚙️ System Specs"],
+            options=["Home", "Leaf Analysis", "Model Metrics", "System Specs"],
             icons=["house-fill", "search-heart", "bar-chart-fill", "gear-fill"],
             menu_icon="cast",
             default_index=0,
@@ -702,7 +702,7 @@ def show_home():
     """Premium home page with agriculture-themed Lottie animations."""
     # Centered Premium Branding
     st.markdown("""
-    <div class="premium-title">🌱 LeafGuard AI</div>
+    <div class="premium-title">LeafGuard AI</div>
     <div class="premium-subtitle">Precision Disease Detection & Pathological Analysis System</div>
     """, unsafe_allow_html=True)
     
@@ -725,8 +725,7 @@ def show_home():
             # Enhanced fallback with agriculture theme
             st.markdown("""
             <div style="text-align: center; padding: 2rem;">
-                <div style="font-size: 5rem; color: #4CAF50; animation: pulse 3s infinite;">🌱</div>
-                <div style="font-size: 3rem; color: #2E7D32; animation: pulse 3s infinite 0.5s;">🍃</div>
+                <div style="font-size: 3rem; color: #4CAF50; font-weight: bold;">Plant Health Analysis</div>
                 <p style="color: #2E7D32; font-style: italic; font-size: 1.1rem; margin-top: 1rem;">
                     Growing Innovation in Agriculture
                 </p>
@@ -745,14 +744,14 @@ def show_home():
     </div>
     """, unsafe_allow_html=True)
     
-    st.markdown("## 🎯 Project Excellence")
+    st.markdown("## Project Excellence")
     
     col1, col2 = st.columns(2)
     
     with col1:
         st.markdown("""
         <div class="feature-card">
-            <div class="feature-title">🎯 Research Objectives</div>
+            <div class="feature-title">Research Objectives</div>
             <div class="feature-description">
                 • Develop state-of-the-art disease detection system<br>
                 • Achieve real-time processing capabilities<br>
@@ -766,7 +765,7 @@ def show_home():
     with col2:
         st.markdown("""
         <div class="feature-card">
-            <div class="feature-title">✨ Key Achievements</div>
+            <div class="feature-title">Key Achievements</div>
             <div class="feature-description">
                 • 82.19% Dice Score accuracy achieved<br>
                 • Sub-2 second inference time per image<br>
@@ -778,11 +777,11 @@ def show_home():
         """, unsafe_allow_html=True)
     
     # Academic Excellence Section
-    st.markdown("## 🏛️ Academic Excellence")
+    st.markdown("## Academic Excellence")
     
     st.markdown("""
     <div class="hero-section">
-        <h3 style="color: #1B5E20; margin-bottom: 2rem;">🎓 SRM Institute of Science and Technology</h3>
+        <h3 style="color: #1B5E20; margin-bottom: 2rem;">SRM Institute of Science and Technology</h3>
         <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin: 2rem 0;">
             <div style="color: #2E7D32; text-align: center; padding: 1rem;">
                 <div style="font-size: 1.5rem; font-weight: 700; color: #1B5E20;">Final Year Project</div>
@@ -802,7 +801,7 @@ def show_home():
             </div>
         </div>
         <p style="color: #1B5E20; font-style: italic; margin-top: 3rem; font-size: 1.1rem;">
-            🌿 Advanced Deep Learning for Sustainable Agriculture & Plant Health Management 🌿
+            Advanced Deep Learning for Sustainable Agriculture & Plant Health Management
         </p>
     </div>
     """, unsafe_allow_html=True)
@@ -810,7 +809,7 @@ def show_home():
 def show_analysis():
     """Premium leaf analysis page with agriculture-themed animations."""
     st.markdown("""
-    <div class="premium-title" style="font-size: 3rem;">🔍 Plant Disease Detection</div>
+    <div class="premium-title" style="font-size: 3rem;">Plant Disease Detection</div>
     <div class="premium-subtitle">AI-Powered Pathological Analysis System</div>
     """, unsafe_allow_html=True)
     
@@ -837,8 +836,7 @@ def show_analysis():
             # Enhanced agriculture-themed fallback
             st.markdown("""
             <div style="text-align: center; padding: 1.5rem;">
-                <div style="font-size: 3rem; color: #4CAF50; animation: pulse 2s infinite;">🔬</div>
-                <div style="font-size: 2.5rem; color: #2E7D32; animation: pulse 2s infinite 0.3s;">🍃</div>
+                <div style="font-size: 2rem; color: #4CAF50; font-weight: bold;">Leaf Analysis System</div>
                 <p style="color: #2E7D32; font-style: italic; margin-top: 1rem;">
                     Advanced Leaf Analysis in Progress
                 </p>
@@ -846,7 +844,7 @@ def show_analysis():
             """, unsafe_allow_html=True)
     
     # Premium Model Configuration
-    st.markdown("### ⚙️ Model Configuration")
+    st.markdown("### Model Configuration")
     
     col1, col2, col3 = st.columns(3)
     
@@ -878,7 +876,7 @@ def show_analysis():
         """, unsafe_allow_html=True)
     
     # Premium Upload Interface
-    st.markdown("### 📤 Image Upload & Analysis")
+    st.markdown("### Image Upload & Analysis")
     
     uploaded_file = st.file_uploader(
         "Choose a leaf image",
@@ -888,14 +886,14 @@ def show_analysis():
     
     if uploaded_file is not None:
         # Display uploaded image with premium styling
-        st.markdown("#### 📸 Analysis Results")
+        st.markdown("#### Analysis Results")
         
         col1, col2, col3 = st.columns(3)
         
         with col1:
             st.markdown("""
             <div class="feature-card">
-                <div class="feature-title">📸 Original Image</div>
+                <div class="feature-title">Original Image</div>
             </div>
             """, unsafe_allow_html=True)
             st.image(uploaded_file, use_column_width=True)
@@ -903,12 +901,12 @@ def show_analysis():
         with col2:
             st.markdown("""
             <div class="feature-card">
-                <div class="feature-title">🔴 Disease Detection</div>
+                <div class="feature-title">Disease Detection</div>
             </div>
             """, unsafe_allow_html=True)
             
             # Premium processing animation
-            with st.spinner("🔬 Analyzing with U-Net model..."):
+            with st.spinner("Analyzing with U-Net model..."):
                 progress_bar = st.progress(0)
                 for i in range(100):
                     time.sleep(0.02)
@@ -920,41 +918,41 @@ def show_analysis():
             <div style="background: linear-gradient(45deg, #ffebee, #ffcdd2); height: 200px; border-radius: 15px; 
                         display: flex; align-items: center; justify-content: center; color: #c62828; font-weight: bold;
                         box-shadow: 0 8px 25px rgba(198, 40, 40, 0.2); animation: fadeInUp 0.8s ease-out;">
-                🔴 Disease Overlay Detected
+                Disease Overlay Detected
             </div>
             """, unsafe_allow_html=True)
         
         with col3:
             st.markdown("""
             <div class="feature-card">
-                <div class="feature-title">📊 Health Report</div>
+                <div class="feature-title">Health Report</div>
                 <div style="text-align: center; padding: 1.5rem;">
                     <div style="color: #1B5E20; font-size: 2.5rem; font-weight: 800; margin: 1rem 0; animation: pulse 2s infinite;">15.3%</div>
                     <div style="color: #2E7D32; font-weight: 700; margin-bottom: 1.5rem; font-size: 1.1rem;">Disease Coverage</div>
                     <div style="background: linear-gradient(135deg, #FFC107, #FF9800); color: white; padding: 0.75rem 1rem; 
                                 border-radius: 12px; font-weight: bold; box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);">
-                        ⚠️ MODERATE RISK
+                        MODERATE RISK
                     </div>
                 </div>
             </div>
             """, unsafe_allow_html=True)
         
         # Premium Treatment Recommendations
-        st.markdown("#### 💊 Treatment Recommendations")
+        st.markdown("#### Treatment Recommendations")
         
         st.markdown("""
         <div class="feature-card">
-            <div class="feature-title">🌿 Professional Treatment Plan</div>
+            <div class="feature-title">Professional Treatment Plan</div>
             <div class="feature-description">
                 <strong style="color: #1B5E20; font-size: 1.1rem;">Severity Assessment:</strong> Moderate (15.3% coverage)<br><br>
                 
-                <strong style="color: #1B5E20;">🚨 Immediate Actions (24-48 hours):</strong><br>
+                <strong style="color: #1B5E20;">Immediate Actions (24-48 hours):</strong><br>
                 • Apply targeted fungicide treatment to affected areas<br>
                 • Remove and dispose of severely infected leaves safely<br>
                 • Improve air circulation around the plant structure<br>
                 • Adjust watering schedule to reduce moisture buildup<br><br>
                 
-                <strong style="color: #1B5E20;">🛡️ Preventive Measures (Ongoing):</strong><br>
+                <strong style="color: #1B5E20;">Preventive Measures (Ongoing):</strong><br>
                 • Implement weekly monitoring and health assessments<br>
                 • Apply preventive fungicide spray every two weeks<br>
                 • Ensure optimal plant spacing for air circulation<br>
@@ -965,13 +963,13 @@ def show_analysis():
         """, unsafe_allow_html=True)
         
         # Premium Download Section
-        st.markdown("#### 💾 Export Analysis Results")
+        st.markdown("#### Export Analysis Results")
         
         col1, col2, col3 = st.columns(3)
         
         with col1:
             st.download_button(
-                label="📄 Download Detailed Report",
+                label="Download Detailed Report",
                 data="Premium analysis report data",
                 file_name="leafguard_analysis_report.pdf",
                 mime="application/pdf"
@@ -979,7 +977,7 @@ def show_analysis():
         
         with col2:
             st.download_button(
-                label="🖼️ Download Disease Mask",
+                label="Download Disease Mask",
                 data="Premium mask image data",
                 file_name="disease_detection_mask.png",
                 mime="image/png"
@@ -987,7 +985,7 @@ def show_analysis():
         
         with col3:
             st.download_button(
-                label="📊 Download Analysis Data",
+                label="Download Analysis Data",
                 data="Premium CSV analysis data",
                 file_name="pathological_analysis.csv",
                 mime="text/csv"
@@ -1001,7 +999,7 @@ def show_analysis():
             upload_img +
             '<h2 style="color: #1B5E20; margin: 1.5rem 0; font-size: 2.2rem; font-weight: 700;">Ready for Advanced Analysis</h2>' +
             '<p style="color: #2E7D32; font-size: 1.3rem; margin-bottom: 2rem; font-weight: 500;">Upload a leaf image to begin AI-powered pathological detection</p>' +
-            '<p style="color: #4CAF50; font-size: 1rem; font-weight: 600;">📋 Supported: JPG, JPEG, PNG | 🎯 Recommended: 1024×1024+ resolution</p>' +
+            '<p style="color: #4CAF50; font-size: 1rem; font-weight: 600;">Supported: JPG, JPEG, PNG | Recommended: 1024×1024+ resolution</p>' +
             '</div>',
             unsafe_allow_html=True
         )
@@ -1009,12 +1007,12 @@ def show_analysis():
 def show_metrics():
     """Premium model metrics page with enhanced visualizations."""
     st.markdown("""
-    <div class="premium-title" style="font-size: 3rem;">📊 Model Performance</div>
+    <div class="premium-title" style="font-size: 3rem;">Model Performance</div>
     <div class="premium-subtitle">Comprehensive Evaluation & Metrics Analysis</div>
     """, unsafe_allow_html=True)
     
     # Premium Performance Overview
-    st.markdown("### 🎯 Performance Excellence")
+    st.markdown("### Performance Excellence")
     
     col1, col2, col3, col4 = st.columns(4)
     
@@ -1055,14 +1053,14 @@ def show_metrics():
         """, unsafe_allow_html=True)
     
     # Premium Training Details
-    st.markdown("### 📈 Training Excellence")
+    st.markdown("### Training Excellence")
     
     col1, col2 = st.columns(2)
     
     with col1:
         st.markdown("""
         <div class="feature-card">
-            <div class="feature-title">📊 Dataset Specifications</div>
+            <div class="feature-title">Dataset Specifications</div>
             <div class="feature-description">
                 <strong>Training Samples:</strong> 2,998 augmented high-quality images<br>
                 <strong>Validation Set:</strong> 90 carefully curated test samples<br>
@@ -1078,7 +1076,7 @@ def show_metrics():
     with col2:
         st.markdown("""
         <div class="feature-card">
-            <div class="feature-title">⚙️ Training Configuration</div>
+            <div class="feature-title">Training Configuration</div>
             <div class="feature-description">
                 <strong>Optimizer:</strong> Adam with adaptive learning rate (0.001)<br>
                 <strong>Loss Function:</strong> Combined Binary Cross-Entropy + Dice Loss<br>
@@ -1092,14 +1090,14 @@ def show_metrics():
         """, unsafe_allow_html=True)
     
     # Premium Evaluation Results
-    st.markdown("### 🎯 Evaluation Excellence")
+    st.markdown("### Evaluation Excellence")
     
     col1, col2, col3 = st.columns(3)
     
     with col1:
         st.markdown("""
         <div class="feature-card">
-            <div class="feature-title">📊 Threshold Optimization</div>
+            <div class="feature-title">Threshold Optimization</div>
             <div class="feature-description">
                 Comprehensive threshold analysis performed across the range 0.1 to 0.5 with 0.05 increments. 
                 The optimal threshold of 0.4 was scientifically selected based on maximizing the Dice Score 
@@ -1112,7 +1110,7 @@ def show_metrics():
     with col2:
         st.markdown("""
         <div class="feature-card">
-            <div class="feature-title">🔬 Validation Protocol</div>
+            <div class="feature-title">Validation Protocol</div>
             <div class="feature-description">
                 Rigorous validation methodology using 90 professionally annotated test images with 
                 ground truth masks created by agricultural experts. Cross-validation techniques and 
@@ -1126,7 +1124,7 @@ def show_metrics():
     with col3:
         st.markdown("""
         <div class="feature-card">
-            <div class="feature-title">⚡ Performance Optimization</div>
+            <div class="feature-title">Performance Optimization</div>
             <div class="feature-description">
                 Advanced model optimization including mixed precision training (FP16/FP32), efficient 
                 data loading pipelines, and GPU memory management strategies. Inference time optimized 
@@ -1139,12 +1137,12 @@ def show_metrics():
 def show_specs():
     """Premium system specifications with enhanced technical details."""
     st.markdown("""
-    <div class="premium-title" style="font-size: 3rem;">⚙️ System Architecture</div>
+    <div class="premium-title" style="font-size: 3rem;">System Architecture</div>
     <div class="premium-subtitle">Technical Specifications & Requirements</div>
     """, unsafe_allow_html=True)
     
     # Premium Technical Architecture
-    st.markdown("### 🧠 Deep Learning Architecture")
+    st.markdown("### Deep Learning Architecture")
     
     col1, col2 = st.columns(2)
     
@@ -1187,7 +1185,7 @@ def show_specs():
         )
     
     # Premium System Requirements
-    st.markdown("### 💻 System Requirements")
+    st.markdown("### System Requirements")
     
     col1, col2 = st.columns(2)
     
@@ -1228,7 +1226,7 @@ def show_specs():
         )
     
     # Premium Data Processing Pipeline
-    st.markdown("### 📊 Data Processing Pipeline")
+    st.markdown("### Data Processing Pipeline")
     
     col1, col2, col3 = st.columns(3)
     
@@ -1282,13 +1280,13 @@ def main():
     selected = render_navigation()
     
     # Page routing with smooth transitions
-    if selected == "🏠 Home":
+    if selected == "Home":
         show_home()
-    elif selected == "🔍 Leaf Analysis":
+    elif selected == "Leaf Analysis":
         show_analysis()
-    elif selected == "📊 Model Metrics":
+    elif selected == "Model Metrics":
         show_metrics()
-    elif selected == "⚙️ System Specs":
+    elif selected == "System Specs":
         show_specs()
 
 if __name__ == "__main__":

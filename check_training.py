@@ -12,7 +12,7 @@ def check_training_status():
     final_model_path = "models/checkpoints/final_model.pth"
     best_model_path = "models/checkpoints/best_model.pth"
     
-    print(f"🔍 Training Status Check - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
+    print(f"Training Status Check - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}")
     print("=" * 60)
     
     # Check if process is running

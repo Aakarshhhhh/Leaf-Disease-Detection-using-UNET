@@ -35,12 +35,12 @@ def load_training_history():
     history_files = glob.glob(os.path.join(config.OUTPUTS_DIR, '*history*.json'))
     
     if not history_files:
-        print("⚠️  No training history found. Will skip curve plotting.")
+        print("WARNING: No training history found. Will skip curve plotting.")
         return None
     
     # Load the most recent history file
     latest_history = max(history_files, key=os.path.getctime)
-    print(f"📊 Loading training history from: {latest_history}")
+    print(f"Loading training history from: {latest_history}")
     
     with open(latest_history, 'r') as f:
         history = json.load(f)
@@ -80,7 +80,7 @@ def plot_training_curves(history, save_path):
     plt.savefig(save_path, dpi=300, bbox_inches='tight')
     plt.close()
     
-    print(f"📈 Training curves saved to: {save_path}")
+    print(f"Training curves saved to: {save_path}")
 
 
 def load_best_model(device):

@@ -11,9 +11,21 @@ import requests
 from streamlit_option_menu import option_menu
 from streamlit_lottie import st_lottie
 import time
+import tempfile
+import numpy as np
 
 # Add src to path
 sys.path.append('src')
+
+@st.cache_resource
+def load_predictor():
+    import torch
+    from src.inference import PlantDiseasePredictor
+    model_path = os.path.join("models", "checkpoints", "best_model.pth")
+    if not os.path.exists(model_path):
+        return None
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    return PlantDiseasePredictor(model_path, device=device)
 
 def get_base64_image(image_path):
     """Convert image to base64 string for embedding in HTML."""
@@ -220,42 +232,44 @@ def load_premium_css():
         
         /* Centered Premium Branding */
         .premium-title {
-            text-align: center;
+            text-align: center !important;
             color: #1B5E20 !important;
             font-size: 4rem !important;
             font-weight: 800 !important;
-            margin: 2rem 0 1rem 0 !important;
+            margin: 2rem auto 1rem auto !important;
+            padding: 0 !important;
             text-shadow: 0 4px 8px rgba(27, 94, 32, 0.2) !important;
             letter-spacing: -2px !important;
             animation: fadeInUp 1.2s ease-out !important;
+            width: 100% !important;
+            display: block !important;
         }
         
         .premium-subtitle {
-            text-align: center;
+            text-align: center !important;
             color: #2E7D32 !important;
             font-size: 1.5rem !important;
             font-weight: 600 !important;
-            margin-bottom: 3rem !important;
+            margin: 0 auto 3rem auto !important;
+            padding: 0 !important;
             animation: fadeInUp 1.4s ease-out !important;
+            width: 100% !important;
+            display: block !important;
         }
         
-        /* Custom navigation styling with enhanced natural forest theme */
+        /* Custom navigation styling with deep forest green gradient */
         .nav-container {
-            /* Enhanced glass morphism for navigation */
-            background: rgba(27, 94, 32, 0.85);
-            backdrop-filter: blur(25px) saturate(180%);
-            -webkit-backdrop-filter: blur(25px) saturate(180%);
+            /* Solid deep forest green gradient */
+            background: linear-gradient(135deg, #1a4a2e 0%, #2d7a3a 100%);
             padding: 0;
             margin: -1rem -1rem 3rem -1rem;
-            /* Natural forest-inspired shadows */
+            /* Natural bottom shadow/border in a lighter green tone for separation */
             box-shadow: 
-                0 8px 32px rgba(27, 94, 32, 0.25),
-                0 2px 8px rgba(46, 125, 50, 0.15),
-                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+                0 4px 15px rgba(61, 154, 74, 0.4),
+                0 2px 8px rgba(26, 74, 46, 0.3);
+            border-bottom: 2px solid rgba(61, 154, 74, 0.6);
             border-radius: 0 0 28px 28px;
             animation: slideInLeft 0.8s ease-out;
-            border: 1px solid rgba(255, 255, 255, 0.15);
-            border-top: none;
             position: relative;
             overflow: hidden;
         }
@@ -644,6 +658,38 @@ def load_premium_css():
             transform: translateY(-2px) !important;
             box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4) !important;
         }
+        /* Custom File Uploader Styling to Match Theme */
+        [data-testid="stFileUploaderDropzone"] {
+            background-color: #f0f7f0 !important;
+            border: 2px dashed #2d7a3a !important;
+            border-radius: 15px !important;
+        }
+        
+        [data-testid="stFileUploaderDropzone"] div,
+        [data-testid="stFileUploaderDropzone"] p,
+        [data-testid="stFileUploaderDropzone"] span {
+            color: #1B5E20 !important;
+        }
+        
+        [data-testid="stFileUploaderDropzone"] svg {
+            fill: #1B5E20 !important;
+            color: #1B5E20 !important;
+        }
+        
+        [data-testid="stFileUploaderDropzone"] button {
+            background: linear-gradient(135deg, #4CAF50, #2E7D32) !important;
+            color: white !important;
+            border: none !important;
+            border-radius: 8px !important;
+            font-weight: 600 !important;
+            transition: all 0.3s ease !important;
+        }
+        
+        [data-testid="stFileUploaderDropzone"] button:hover {
+            background: linear-gradient(135deg, #66BB6A, #388E3C) !important;
+            transform: translateY(-2px) !important;
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4) !important;
+        }
     </style>
     """, unsafe_allow_html=True)
 
@@ -674,21 +720,21 @@ def render_navigation():
                     "text-align": "center",
                     "margin": "0px",
                     "padding": "15px 25px",
-                    "color": "white",
+                    "color": "#ffffff",
                     "background-color": "transparent",
                     "border-radius": "12px",
                     "transition": "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
                     "font-weight": "500"
                 },
                 "nav-link-selected": {
-                    "background-color": "rgba(255, 255, 255, 0.25)",
-                    "color": "white",
+                    "background-color": "#3d9a4a",
+                    "color": "#ffffff",
                     "font-weight": "700",
                     "transform": "translateY(-2px)",
-                    "box-shadow": "0 8px 25px rgba(0, 0, 0, 0.2)"
+                    "box-shadow": "0 4px 15px rgba(0, 0, 0, 0.3)"
                 },
                 "nav-link:hover": {
-                    "background-color": "rgba(255, 255, 255, 0.15)",
+                    "background-color": "rgba(61, 154, 74, 0.4)",
                     "transform": "translateY(-1px)"
                 }
             }
@@ -702,8 +748,10 @@ def show_home():
     """Premium home page with agriculture-themed Lottie animations."""
     # Centered Premium Branding
     st.markdown("""
-    <div class="premium-title">LeafGuard AI</div>
-    <div class="premium-subtitle">Precision Disease Detection & Pathological Analysis System</div>
+    <div style="text-align: center; width: 100%; margin: 0 auto; padding: 0;">
+        <div class="premium-title" style="text-align: center !important; margin-left: auto !important; margin-right: auto !important;">LeafGuard AI</div>
+        <div class="premium-subtitle" style="text-align: center !important; margin-left: auto !important; margin-right: auto !important;">Precision Disease Detection & Pathological Analysis System</div>
+    </div>
     """, unsafe_allow_html=True)
     
     # Agriculture-themed Lottie Animation - Centered as Visual Centerpiece
@@ -724,9 +772,9 @@ def show_home():
         else:
             # Enhanced fallback with agriculture theme
             st.markdown("""
-            <div style="text-align: center; padding: 2rem;">
-                <div style="font-size: 3rem; color: #4CAF50; font-weight: bold;">Plant Health Analysis</div>
-                <p style="color: #2E7D32; font-style: italic; font-size: 1.1rem; margin-top: 1rem;">
+            <div style="display: flex; flex-direction: column; align-items: center; padding: 2rem; width: 100%;">
+                <div style="font-size: 3rem; color: #4CAF50; font-weight: bold; text-align: center; margin: 0; padding: 0; margin-bottom: 20px; width: 100%;">Plant Health Analysis</div>
+                <p style="color: #2E7D32; font-style: normal; font-size: 1.1rem; margin: 0; padding: 0; text-align: center; width: 100%;">
                     Growing Innovation in Agriculture
                 </p>
             </div>
@@ -809,8 +857,10 @@ def show_home():
 def show_analysis():
     """Premium leaf analysis page with agriculture-themed animations."""
     st.markdown("""
-    <div class="premium-title" style="font-size: 3rem;">Plant Disease Detection</div>
-    <div class="premium-subtitle">AI-Powered Pathological Analysis System</div>
+    <div style="text-align: center; width: 100%; margin: 0 auto; padding: 0;">
+        <div class="premium-title" style="font-size: 3rem; text-align: center !important; margin-left: auto !important; margin-right: auto !important;">Plant Disease Detection</div>
+        <div class="premium-subtitle" style="text-align: center !important; margin-left: auto !important; margin-right: auto !important;">AI-Powered Pathological Analysis System</div>
+    </div>
     """, unsafe_allow_html=True)
     
     # Agriculture-themed Lottie Animation for Analysis
@@ -835,9 +885,9 @@ def show_analysis():
         else:
             # Enhanced agriculture-themed fallback
             st.markdown("""
-            <div style="text-align: center; padding: 1.5rem;">
-                <div style="font-size: 2rem; color: #4CAF50; font-weight: bold;">Leaf Analysis System</div>
-                <p style="color: #2E7D32; font-style: italic; margin-top: 1rem;">
+            <div style="display: flex; flex-direction: column; align-items: center; padding: 1.5rem;">
+                <div style="font-size: 2rem; color: #4CAF50; font-weight: bold; text-align: center; margin: 0; padding: 0; margin-bottom: 20px; width: 100%;">Leaf Analysis System</div>
+                <p style="color: #2E7D32; font-style: normal; margin: 0; padding: 0; text-align: center; width: 100%;">
                     Advanced Leaf Analysis in Progress
                 </p>
             </div>
@@ -907,31 +957,51 @@ def show_analysis():
             
             # Premium processing animation
             with st.spinner("Analyzing with U-Net model..."):
-                progress_bar = st.progress(0)
-                for i in range(100):
-                    time.sleep(0.02)
-                    progress_bar.progress(i + 1)
-                progress_bar.empty()
-            
-            # Create a premium mock disease overlay
-            st.markdown("""
-            <div style="background: linear-gradient(45deg, #ffebee, #ffcdd2); height: 200px; border-radius: 15px; 
-                        display: flex; align-items: center; justify-content: center; color: #c62828; font-weight: bold;
-                        box-shadow: 0 8px 25px rgba(198, 40, 40, 0.2); animation: fadeInUp 0.8s ease-out;">
-                Disease Overlay Detected
-            </div>
-            """, unsafe_allow_html=True)
+                predictor = load_predictor()
+                if predictor is None:
+                    st.error("Model not found! Please train the model first.")
+                    st.stop()
+                    
+                # Save uploaded file temporarily
+                with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmp_file:
+                    tmp_file.write(uploaded_file.getvalue())
+                    tmp_filepath = tmp_file.name
+                
+                # Make prediction
+                pred_mask, original_image = predictor.predict(tmp_filepath)
+                
+                # Calculate severity
+                severity = predictor.calculate_disease_severity(pred_mask, threshold=0.4)
+                
+                # Create overlay
+                from src.utils import create_overlay_visualization
+                binary_mask = (pred_mask > 0.4).astype(np.uint8)
+                overlay = create_overlay_visualization(original_image, binary_mask, 0.4, (255, 0, 0))
+                
+                # Clean up
+                os.remove(tmp_filepath)
+
+            # Show actual disease overlay
+            st.image(overlay, use_column_width=True)
         
         with col3:
-            st.markdown("""
+            severity_color = "#4CAF50" # Healthy
+            if severity["severity_level"] == "Mild":
+                severity_color = "#FFC107"
+            elif severity["severity_level"] == "Moderate":
+                severity_color = "#FF9800"
+            elif severity["severity_level"] in ["Severe", "Critical"]:
+                severity_color = "#F44336"
+
+            st.markdown(f"""
             <div class="feature-card">
                 <div class="feature-title">Health Report</div>
                 <div style="text-align: center; padding: 1.5rem;">
-                    <div style="color: #1B5E20; font-size: 2.5rem; font-weight: 800; margin: 1rem 0; animation: pulse 2s infinite;">15.3%</div>
+                    <div style="color: #1B5E20; font-size: 2.5rem; font-weight: 800; margin: 1rem 0; animation: pulse 2s infinite;">{severity['severity_percentage']:.1f}%</div>
                     <div style="color: #2E7D32; font-weight: 700; margin-bottom: 1.5rem; font-size: 1.1rem;">Disease Coverage</div>
-                    <div style="background: linear-gradient(135deg, #FFC107, #FF9800); color: white; padding: 0.75rem 1rem; 
-                                border-radius: 12px; font-weight: bold; box-shadow: 0 4px 15px rgba(255, 193, 7, 0.3);">
-                        MODERATE RISK
+                    <div style="background: {severity_color}; color: white; padding: 0.75rem 1rem; 
+                                border-radius: 12px; font-weight: bold; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);">
+                        {severity['severity_level'].upper()} RISK
                     </div>
                 </div>
             </div>
@@ -940,27 +1010,27 @@ def show_analysis():
         # Premium Treatment Recommendations
         st.markdown("#### Treatment Recommendations")
         
-        st.markdown("""
-        <div class="feature-card">
-            <div class="feature-title">Professional Treatment Plan</div>
-            <div class="feature-description">
-                <strong style="color: #1B5E20; font-size: 1.1rem;">Severity Assessment:</strong> Moderate (15.3% coverage)<br><br>
-                
-                <strong style="color: #1B5E20;">Immediate Actions (24-48 hours):</strong><br>
-                • Apply targeted fungicide treatment to affected areas<br>
-                • Remove and dispose of severely infected leaves safely<br>
-                • Improve air circulation around the plant structure<br>
-                • Adjust watering schedule to reduce moisture buildup<br><br>
-                
-                <strong style="color: #1B5E20;">Preventive Measures (Ongoing):</strong><br>
-                • Implement weekly monitoring and health assessments<br>
-                • Apply preventive fungicide spray every two weeks<br>
-                • Ensure optimal plant spacing for air circulation<br>
-                • Consider disease-resistant varieties for future cultivation<br>
-                • Maintain detailed health records for trend analysis
-            </div>
-        </div>
-        """, unsafe_allow_html=True)
+        st.markdown(f"""
+<div class="feature-card">
+<div class="feature-title">Professional Treatment Plan</div>
+<div class="feature-description">
+<strong style="color: #1B5E20; font-size: 1.1rem;">Severity Assessment:</strong> {severity['severity_level']} ({severity['severity_percentage']:.1f}% coverage)<br><br>
+
+<strong style="color: #1B5E20;">Immediate Actions (24-48 hours):</strong><br>
+• Apply targeted fungicide treatment to affected areas<br>
+• Remove and dispose of severely infected leaves safely<br>
+• Improve air circulation around the plant structure<br>
+• Adjust watering schedule to reduce moisture buildup<br><br>
+
+<strong style="color: #1B5E20;">Preventive Measures (Ongoing):</strong><br>
+• Implement weekly monitoring and health assessments<br>
+• Apply preventive fungicide spray every two weeks<br>
+• Ensure optimal plant spacing for air circulation<br>
+• Consider disease-resistant varieties for future cultivation<br>
+• Maintain detailed health records for trend analysis
+</div>
+</div>
+""", unsafe_allow_html=True)
         
         # Premium Download Section
         st.markdown("#### Export Analysis Results")
@@ -1007,8 +1077,10 @@ def show_analysis():
 def show_metrics():
     """Premium model metrics page with enhanced visualizations."""
     st.markdown("""
-    <div class="premium-title" style="font-size: 3rem;">Model Performance</div>
-    <div class="premium-subtitle">Comprehensive Evaluation & Metrics Analysis</div>
+    <div style="text-align: center; width: 100%; margin: 0 auto; padding: 0;">
+        <div class="premium-title" style="font-size: 3rem; text-align: center !important; margin-left: auto !important; margin-right: auto !important;">Model Performance</div>
+        <div class="premium-subtitle" style="text-align: center !important; margin-left: auto !important; margin-right: auto !important;">Comprehensive Evaluation & Metrics Analysis</div>
+    </div>
     """, unsafe_allow_html=True)
     
     # Premium Performance Overview
@@ -1051,6 +1123,7 @@ def show_metrics():
             <div style="color: #4CAF50; font-size: 1rem;">Training Cycles</div>
         </div>
         """, unsafe_allow_html=True)
+
     
     # Premium Training Details
     st.markdown("### Training Excellence")
@@ -1137,8 +1210,10 @@ def show_metrics():
 def show_specs():
     """Premium system specifications with enhanced technical details."""
     st.markdown("""
-    <div class="premium-title" style="font-size: 3rem;">System Architecture</div>
-    <div class="premium-subtitle">Technical Specifications & Requirements</div>
+    <div style="text-align: center; width: 100%; margin: 0 auto; padding: 0;">
+        <div class="premium-title" style="font-size: 3rem; text-align: center !important; margin-left: auto !important; margin-right: auto !important;">System Architecture</div>
+        <div class="premium-subtitle" style="text-align: center !important; margin-left: auto !important; margin-right: auto !important;">Technical Specifications & Requirements</div>
+    </div>
     """, unsafe_allow_html=True)
     
     # Premium Technical Architecture

@@ -654,9 +654,21 @@ def load_premium_css():
             box-shadow: 0 4px 15px rgba(76, 175, 80, 0.3) !important;
         }
         
+        .stDownloadButton > button p,
+        .stDownloadButton > button span,
+        .stDownloadButton > button div {
+            color: white !important;
+        }
+        
         .stDownloadButton > button:hover {
             transform: translateY(-2px) !important;
             box-shadow: 0 8px 25px rgba(76, 175, 80, 0.4) !important;
+        }
+        
+        .stDownloadButton > button:hover p,
+        .stDownloadButton > button:hover span,
+        .stDownloadButton > button:hover div {
+            color: white !important;
         }
         /* Custom File Uploader Styling to Match Theme */
         [data-testid="stFileUploaderDropzone"] {
@@ -692,6 +704,21 @@ def load_premium_css():
         }
     </style>
     """, unsafe_allow_html=True)
+    
+    # Apply dynamic image background
+    bg_base64 = get_base64_image(os.path.join("images", "forest_bg.png"))
+    if bg_base64:
+        st.markdown(f"""
+        <style>
+        .stApp {{
+            background: linear-gradient(rgba(232, 245, 233, 0.6), rgba(165, 214, 167, 0.7)), url("data:image/png;base64,{bg_base64}") !important;
+            background-size: cover !important;
+            background-position: center !important;
+            background-attachment: fixed !important;
+        }}
+        </style>
+        """, unsafe_allow_html=True)
+
 
 def render_navigation():
     """Render premium horizontal navigation bar."""
@@ -971,7 +998,7 @@ def show_analysis():
                 pred_mask, original_image = predictor.predict(tmp_filepath)
                 
                 # Calculate severity
-                severity = predictor.calculate_disease_severity(pred_mask, threshold=0.4)
+                severity = predictor.calculate_disease_severity(pred_mask, original_image=original_image, threshold=0.4)
                 
                 # Create overlay
                 from src.utils import create_overlay_visualization
@@ -1032,6 +1059,34 @@ def show_analysis():
 </div>
 """, unsafe_allow_html=True)
         
+        # Generate download data
+        import cv2
+        # 1. Report Text (.txt)
+        report_data = f"""LEAFGUARD AI ANALYSIS REPORT
+============================
+
+ASSESSMENT
+----------
+Severity Level: {severity['severity_level']}
+Disease Coverage: {severity['severity_percentage']:.1f}%
+
+RECOMMENDED ACTIONS
+-------------------
+• Apply targeted fungicide treatment to affected areas
+• Remove and dispose of severely infected leaves safely
+• Improve air circulation around the plant structure
+• Adjust watering schedule to reduce moisture buildup
+"""
+        
+        # 2. Mask Image PNG
+        # Convert binary mask to 255-scaled uint8 array, then encode to PNG bytes
+        mask_uint8 = (binary_mask * 255).astype(np.uint8)
+        _, buffer = cv2.imencode('.png', mask_uint8)
+        mask_bytes = buffer.tobytes()
+        
+        # 3. CSV Data
+        csv_data = f"Metric,Value\nTotal Area Pixels,{severity['total_pixels']}\nDiseased Area Pixels,{severity['diseased_pixels']}\nDisease Coverage (%),{severity['severity_percentage']:.2f}\nSeverity Risk Level,{severity['severity_level']}\n"
+        
         # Premium Download Section
         st.markdown("#### Export Analysis Results")
         
@@ -1040,15 +1095,15 @@ def show_analysis():
         with col1:
             st.download_button(
                 label="Download Detailed Report",
-                data="Premium analysis report data",
-                file_name="leafguard_analysis_report.pdf",
-                mime="application/pdf"
+                data=report_data,
+                file_name="leafguard_analysis_report.txt",
+                mime="text/plain"
             )
         
         with col2:
             st.download_button(
                 label="Download Disease Mask",
-                data="Premium mask image data",
+                data=mask_bytes,
                 file_name="disease_detection_mask.png",
                 mime="image/png"
             )
@@ -1056,7 +1111,7 @@ def show_analysis():
         with col3:
             st.download_button(
                 label="Download Analysis Data",
-                data="Premium CSV analysis data",
+                data=csv_data,
                 file_name="pathological_analysis.csv",
                 mime="text/csv"
             )

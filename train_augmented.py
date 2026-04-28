@@ -2,18 +2,17 @@
 
 import os
 import sys
+import time
+import json
+import argparse
+from datetime import datetime
+
 import torch
 import torch.optim as optim
 from torch.utils.data import DataLoader
 from tqdm import tqdm
-import argparse
-import json
-import time
-from datetime import datetime
 
-# Add src to path
-sys.path.append('src')
-
+import config
 from src.model import get_model
 from src.dataset import PlantDiseaseDataset, get_transforms
 from src.utils import (
@@ -185,7 +184,7 @@ def main():
         image_size=config.IMAGE_SIZE
     )
     
-    print(f'📊 Dataset Statistics:')
+    print('📊 Dataset Statistics:')
     print(f'   🔹 Train samples: {len(train_loader.dataset):,}')
     print(f'   🔹 Validation samples: {len(val_loader.dataset):,}')
     print(f'   🔹 Train batches: {len(train_loader):,}')
@@ -225,7 +224,7 @@ def main():
     best_val_loss = float('inf')
     start_time = time.time()
     
-    print(f'\n🚀 Starting training with augmented dataset...')
+    print('\n🚀 Starting training with augmented dataset...')
     print(f'📅 Training started: {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}')
     print(f'🎯 Target epochs: {args.epochs}')
     print('='*80)
@@ -277,7 +276,7 @@ def main():
         if (epoch + 1) % 5 == 0:
             checkpoint_path = os.path.join(config.CHECKPOINTS_DIR, f'checkpoint_augmented_epoch_{epoch}.pth')
             save_checkpoint(model, optimizer, epoch, val_metrics['loss'], checkpoint_path)
-            print(f'  ✓ Checkpoint saved')
+            print('  ✓ Checkpoint saved')
         
         # Visualize predictions periodically
         if (epoch + 1) % 10 == 0:
@@ -289,7 +288,7 @@ def main():
                 
                 viz_path = os.path.join(config.PREDICTIONS_DIR, f'predictions_augmented_epoch_{epoch}.png')
                 visualize_predictions(images[:4], masks[:4], predictions[:4], viz_path)
-                print(f'  ✓ Predictions saved')
+                print('  ✓ Predictions saved')
         
         if epoch < 5:
             print()  # Extra spacing for first 5 epochs

@@ -136,14 +136,61 @@ class PlantDiseasePredictor:
         
         return overlay, pred_mask, binary_mask
     
-    def calculate_disease_severity(self, pred_mask, threshold=0.5):
+    def calculate_disease_severity(self, pred_mask, original_image=None, threshold=0.5):
         """Calculate disease severity metrics."""
         binary_mask = pred_mask > threshold
         
-        total_pixels = pred_mask.size
+        if original_image is not None:
+            if len(original_image.shape) == 2:
+                # Convert grayscale to RGB for GrabCut
+                img_for_grabcut = cv2.cvtColor(original_image, cv2.COLOR_GRAY2RGB)
+            else:
+                img_for_grabcut = original_image.copy()
+                
+            # Resize for faster GrabCut processing
+            h, w = img_for_grabcut.shape[:2]
+            scale = 256.0 / max(h, w)
+            if scale < 1.0:
+                small_img = cv2.resize(img_for_grabcut, (0,0), fx=scale, fy=scale)
+            else:
+                small_img = img_for_grabcut.copy()
+                
+            # Initialize GrabCut variables
+            mask = np.zeros(small_img.shape[:2], np.uint8)
+            bgModel = np.zeros((1,65), np.float64)
+            fgModel = np.zeros((1,65), np.float64)
+            
+            sh, sw = small_img.shape[:2]
+            # Define bounding box with 1% margin
+            rect = (int(sw*0.01), int(sh*0.01), int(sw*0.98), int(sh*0.98))
+            
+            try:
+                # Apply GrabCut (5 iterations)
+                cv2.grabCut(small_img, mask, rect, bgModel, fgModel, 5, cv2.GC_INIT_WITH_RECT)
+                leaf_mask_small = np.where((mask==2)|(mask==0), 0, 1).astype('uint8')
+                
+                # Resize mask back to original size
+                if scale < 1.0:
+                    leaf_mask = cv2.resize(leaf_mask_small, (w, h), interpolation=cv2.INTER_NEAREST)
+                else:
+                    leaf_mask = leaf_mask_small
+                    
+                # If GrabCut failed and found almost nothing, fallback to simple threshold
+                if (leaf_mask > 0).sum() < (h * w * 0.05):
+                    raise ValueError("GrabCut failed to find foreground")
+            except Exception:
+                # Fallback to simple brightness threshold if GrabCut fails
+                gray = cv2.cvtColor(img_for_grabcut, cv2.COLOR_RGB2GRAY)
+                _, leaf_mask = cv2.threshold(gray, 20, 255, cv2.THRESH_BINARY)
+                
+            total_pixels = max((leaf_mask > 0).sum(), binary_mask.sum(), 1)
+        else:
+            total_pixels = pred_mask.size
+            
         diseased_pixels = binary_mask.sum()
         
         severity_percentage = (diseased_pixels / total_pixels) * 100
+        severity_percentage = min(severity_percentage, 100.0)
         avg_confidence = pred_mask[binary_mask].mean() if diseased_pixels > 0 else 0
         
         return {
@@ -155,14 +202,14 @@ class PlantDiseasePredictor:
         }
     
     def _get_severity_level(self, percentage):
-        """Get severity level based on percentage."""
+        """Get severity level based on true leaf area percentage."""
         if percentage < 1:
             return 'Healthy'
-        elif percentage < 5:
-            return 'Mild'
         elif percentage < 15:
+            return 'Mild'
+        elif percentage < 35:
             return 'Moderate'
-        elif percentage < 30:
+        elif percentage < 60:
             return 'Severe'
         else:
             return 'Critical'
@@ -216,7 +263,7 @@ def main():
     cv2.imwrite(mask_path, (binary_mask * 255).astype(np.uint8))
     
     # Calculate disease severity
-    severity = predictor.calculate_disease_severity(pred_mask, args.threshold)
+    severity = predictor.calculate_disease_severity(pred_mask, threshold=args.threshold)
     
     print('\n--- Disease Analysis Results ---')
     print(f'Image: {os.path.basename(args.image_path)}')
